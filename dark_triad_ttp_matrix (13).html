@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Triad TTP Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111113;
+    --surface2: #18181c;
+    --surface3: #1e1e24;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e6e1;
+    --text2: #9b9894;
+    --text3: #5c5a57;
+    --accent: #c8b89a;
+
+    --narc: #9b7fd4;
+    --narc-dim: rgba(155,127,212,0.12);
+    --narc-border: rgba(155,127,212,0.3);
+
+    --psych: #d4607a;
+    --psych-dim: rgba(212,96,122,0.12);
+    --psych-border: rgba(212,96,122,0.3);
+
+    --mach: #5aad7e;
+    --mach-dim: rgba(90,173,126,0.12);
+    --mach-border: rgba(90,173,126,0.3);
+
+    --fly: #e8860a;
+    --fly-dim: rgba(232,134,10,0.12);
+    --fly-border: rgba(232,134,10,0.3);
+
+    --all-dim: rgba(200,184,154,0.1);
+    --all-border: rgba(200,184,154,0.25);
+
+    --t1: #6c5fc7;
+    --t2: #c25c40;
+    --t3: #b34d6e;
+    --t4: #3a9e72;
+    --t5: #b87a28;
+    --t6: #2e7abf;
+    --t7: #4e9445;
+    --t8: #b83232;
+    --t9: #7a5c9e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .shell { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+  /* HEADER */
+  header {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .header-left {}
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: var(--text3);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  h1 span {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.7;
+    max-width: 280px;
+    text-align: right;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+  .legend-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-right: 0.25rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+  .legend-pip {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* MATRIX GRID */
+  .matrix {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 8px;
+    align-items: start;
+  }
+
+  .col {}
+
+  .tactic-head {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--col-color);
+    border-radius: 4px;
+    padding: 10px 8px;
+    margin-bottom: 6px;
+    text-align: center;
+    cursor: default;
+  }
+
+  .tactic-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--col-color);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+    opacity: 0.8;
+  }
+
+  .tactic-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.03em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  /* TTP CARDS */
+  .ttp {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--col-color);
+    border-radius: 3px;
+    padding: 8px 9px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    position: relative;
+  }
+
+  .ttp:hover {
+    background: var(--surface2);
+    border-color: var(--border2);
+    border-left-color: var(--col-color);
+    transform: translateY(-1px);
+  }
+
+  .ttp-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    margin-bottom: 3px;
+  }
+
+  .ttp-name {
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.35;
+    font-weight: 400;
+    margin-bottom: 5px;
+  }
+
+  .actor-tags {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 8px;
+    font-weight: 500;
+    padding: 1px 5px;
+    border-radius: 2px;
+    letter-spacing: 0.06em;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .tag-N { background: var(--narc-dim); color: var(--narc); border: 1px solid var(--narc-border); }
+  .tag-P { background: var(--psych-dim); color: var(--psych); border: 1px solid var(--psych-border); }
+  .tag-M { background: var(--mach-dim); color: var(--mach); border: 1px solid var(--mach-border); }
+  .tag-F { background: var(--fly-dim); color: var(--fly); border: 1px solid var(--fly-border); }
+
+  /* MODAL */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    padding: 2rem;
+    overflow-y: auto;
+  }
+  .modal-backdrop.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-top: 3px solid var(--modal-color, var(--accent));
+    border-radius: 6px;
+    padding: 2rem;
+    max-width: 520px;
+    width: 100%;
+    position: relative;
+    animation: slide-in 0.2s ease;
+    margin: auto;
+  }
+
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    width: 28px;
+    height: 28px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .modal-close:hover { border-color: var(--border2); color: var(--text); }
+
+  .modal-eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--modal-color, var(--accent));
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .modal-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+    border-left: 2px solid var(--modal-color, var(--accent));
+    padding-left: 12px;
+  }
+
+  .modal-section {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+    margin-top: 1.25rem;
+  }
+
+  .modal-examples {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .modal-examples li {
+    font-size: 11px;
+    color: var(--text2);
+    padding: 6px 10px;
+    background: var(--surface2);
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    line-height: 1.5;
+    position: relative;
+    padding-left: 22px;
+  }
+
+  .modal-examples li::before {
+    content: '›';
+    position: absolute;
+    left: 9px;
+    color: var(--text3);
+  }
+
+  .modal-actors {
+    display: flex;
+    gap: 8px;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .actor-pill {
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .pill-N { background: var(--narc-dim); color: var(--narc); border: 1px solid var(--narc-border); }
+  .pill-P { background: var(--psych-dim); color: var(--psych); border: 1px solid var(--psych-border); }
+  .pill-M { background: var(--mach-dim); color: var(--mach); border: 1px solid var(--mach-border); }
+  .pill-F { background: var(--fly-dim); color: var(--fly); border: 1px solid var(--fly-border); }
+
+  .counter-box {
+    margin-top: 1.25rem;
+    padding: 12px 14px;
+    background: rgba(200,184,154,0.06);
+    border: 1px solid rgba(200,184,154,0.15);
+    border-radius: 4px;
+  }
+
+  .counter-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    opacity: 0.8;
+  }
+
+  .counter-text {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer p {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+  }
+
+  .stat-bar {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-lbl {
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* SEARCH */
+  .toolbar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 160px;
+    max-width: 280px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 12px;
+    pointer-events: none;
+  }
+  #search {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 10px 7px 30px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #search:focus { border-color: var(--border2); }
+  #search::placeholder { color: var(--text3); }
+
+  .filter-btns {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .filter-btn:hover { border-color: var(--border2); color: var(--text); }
+  .filter-btn.active { color: var(--text); border-color: var(--border2); background: var(--surface3); }
+  .filter-btn.f-N.active { color: var(--narc); border-color: var(--narc-border); background: var(--narc-dim); }
+  .filter-btn.f-P.active { color: var(--psych); border-color: var(--psych-border); background: var(--psych-dim); }
+  .filter-btn.f-M.active { color: var(--mach); border-color: var(--mach-border); background: var(--mach-dim); }
+  .filter-btn.f-F.active { color: var(--fly); border-color: var(--fly-border); background: var(--fly-dim); }
+
+  .ttp.hidden { display: none; }
+  .ttp.dimmed { opacity: 0.25; pointer-events: none; }
+
+  @media (max-width: 900px) {
+    .matrix { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    header { flex-direction: column; align-items: flex-start; }
+    .header-meta { text-align: left; max-width: 100%; }
+  }
+  @media (max-width: 600px) {
+    .matrix { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .shell { padding: 0 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <header>
+    <div class="header-left">
+      <div class="eyebrow">Behavioral Threat Intelligence</div>
+      <h1>Dark Triad<br><span>TTP Matrix</span></h1>
+    </div>
+    <div class="header-meta">
+      Tactics, Techniques &amp; Procedures<br>
+      used by narcissistic, psychopathic,<br>
+      Machiavellian individuals,<br>
+      and their flying monkeys.<br><br>
+      Modeled after MITRE ATT&amp;CK™
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search techniques...">
+    </div>
+    <div class="filter-btns">
+      <button class="filter-btn f-all active" data-filter="all">All</button>
+      <button class="filter-btn f-N" data-filter="N">Narcissism</button>
+      <button class="filter-btn f-P" data-filter="P">Psychopathy</button>
+      <button class="filter-btn f-M" data-filter="M">Machiavellianism</button>
+      <button class="filter-btn f-F" data-filter="F">Flying Monkeys</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-label">Profile key —</span>
+    <div class="legend-item"><div class="legend-pip" style="background:var(--narc)"></div>Narcissism (N)</div>
+    <div class="legend-item"><div class="legend-pip" style="background:var(--psych)"></div>Psychopathy (P)</div>
+    <div class="legend-item"><div class="legend-pip" style="background:var(--mach)"></div>Machiavellianism (M)</div>
+    <div class="legend-item"><div class="legend-pip" style="background:var(--fly)"></div>Flying Monkeys (F)</div>
+    <div class="legend-item" style="margin-left:auto; font-size:10px; color:var(--text3)">Click any technique for detail →</div>
+  </div>
+
+  <div class="matrix" id="matrix"></div>
+
+  <footer>
+    <div>
+      <p>Dark Triad TTP Matrix — for educational and protective purposes only.<br>
+      Identifying these patterns is the first step toward protection.</p>
+    </div>
+    <div class="stat-bar">
+      <div class="stat"><span class="stat-num" id="stat-ttps">56</span><span class="stat-lbl">Techniques</span></div>
+      <div class="stat"><span class="stat-num">8</span><span class="stat-lbl">Tactic phases</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-lbl">Profiles</span></div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="backdrop">
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    <div class="modal-eyebrow" id="m-tactic"></div>
+    <div class="modal-id" id="m-id"></div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-desc" id="m-desc"></div>
+    <div class="modal-section">Real-world examples</div>
+    <ul class="modal-examples" id="m-examples"></ul>
+    <div class="modal-section">Associated profiles</div>
+    <div class="modal-actors" id="m-actors"></div>
+    <div class="counter-box">
+      <div class="counter-label">Protective counter-strategy</div>
+      <div class="counter-text" id="m-counter"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TACTIC_COLORS = ['#6c5fc7','#c25c40','#b34d6e','#3a9e72','#b87a28','#2e7abf','#4e9445','#b83232','#7a5c9e'];
+
+const TACTICS = [
+  {
+    id:"TA01", name:"Target Profiling", theme:"t-recon",
+    ttps:[
+      { id:"T1001", name:"Vulnerability mapping", actors:["N","P","M"], desc:"Systematically probing a target's emotional history, insecurities, attachment style, and past traumas to identify exploitable entry points.", examples:["Asking about past relationships under the guise of intimacy","Listening for self-deprecating statements to catalog","Noting reactions to perceived abandonment or rejection"], counter:"Share personal history gradually. Notice if someone asks probing questions early while giving little in return — that asymmetry is meaningful." },
+      { id:"T1002", name:"Social network mapping", actors:["M","P"], desc:"Cataloguing the target's relationships, social capital, support systems, and potential allies or obstacles.", examples:["Identifying who the target trusts most","Noting who might challenge the manipulator","Assessing the target's professional network value for extraction"], counter:"Notice when someone seems overly interested in your relationships before establishing genuine trust with you." },
+      { id:"T1003", name:"Needs assessment", actors:["N","M","P"], desc:"Identifying what the target craves most — validation, love, security, status — to craft the perfect lure tailored to their specific emotional gaps.", examples:["Asking 'what do you look for in a partner/friend/colleague'","Identifying if the target is lonely, recently heartbroken, or insecure","Cataloguing unmet needs disclosed during early conversation"], counter:"Be cautious about revealing core emotional needs to new acquaintances too quickly. Trust is earned over time." },
+      { id:"T1004", name:"Device & account compromise", actors:["N","P","M","F"], desc:"Gaining unauthorized access to the target's devices, accounts, and communications to monitor activity, gather intelligence, and intercept or manipulate information flows.", examples:["Installing stalkerware or spyware on phones, laptops, or tablets","Accessing email, social media, or messaging accounts using known or stolen passwords","Using shared family plans or account access to monitor location and communications","Cloning a SIM card to intercept calls and messages","Using smart home devices — cameras, speakers, doorbells — as covert surveillance tools"], counter:"Audit your devices for unknown apps. Change all passwords from a device the manipulator has never accessed. Check your Google or Apple account for unknown logged-in devices. Contact the National Domestic Violence Hotline's tech safety specialists for device-specific guidance." },
+      { id:"T1005", name:"Location tracking & physical surveillance", actors:["N","P","M","F"], desc:"Using technology to monitor the target's physical location and movements in real time — enabling control, interception, and the psychological effect of the target never feeling unwatched.", examples:["Planting AirTags, GPS trackers, or similar devices in the target's car, bag, or belongings","Using shared location services (Find My, Google Maps sharing) coercively","Monitoring the target's location through spyware or carrier account access","Coordinating flying monkeys to physically follow and report on the target's movements","Using smart car or insurance telematics data to track routes and timing"], counter:"Regularly scan your vehicle and belongings for tracking devices — under wheel wells, in bags, inside car port areas. Apple and Android both have tools to detect unwanted trackers. Disable location sharing from a safe device." },
+      { id:"T1006", name:"Digital identity attack", actors:["N","P","M"], desc:"Creating, hijacking, or weaponizing online identities to impersonate the target, damage their reputation, or flood their digital environment with harassment.", examples:["Creating fake social media profiles impersonating the target to post damaging content","Submitting fraudulent content or reports using the target's identity","Posting the target's personal information publicly (doxxing)","Using the target's real accounts to send damaging messages by gaining unauthorized access","Creating fake professional profiles to damage employment prospects"], counter:"Set up Google Alerts for your name. Regularly search your name and contact details. Report impersonation accounts immediately to platforms. Document everything with screenshots before reporting — platforms sometimes remove content quickly." },
+      { id:"T1007", name:"Deepfake & synthetic media abuse", actors:["P","M"], desc:"Using AI-generated or manipulated media to fabricate evidence of the target doing or saying things they never did — for blackmail, reputational destruction, or legal leverage.", examples:["Creating AI-generated intimate images of the target without consent","Fabricating audio or video of the target making threatening or incriminating statements","Using manipulated screenshots of messages to misrepresent conversations","Generating fake 'evidence' for use in legal proceedings or shared with employers and family"], counter:"If you discover fabricated media, preserve the original with metadata intact before reporting. Many jurisdictions now have specific laws against non-consensual synthetic intimate images. Consult a cyber attorney — this is an evolving but increasingly actionable area of law." },
+      { id:"T1008", name:"Platform harassment coordination", actors:["N","P","M","F"], desc:"Coordinating groups of people to mass-report, brigade, or flood the target's online presence to silence them, damage their accounts, or exhaust them into withdrawing from digital spaces.", examples:["Organizing followers or flying monkeys to mass-report the target's accounts for false violations","Coordinated review bombing of the target's professional or business profiles","Flooding the target's inbox, comments, or mentions with hostile content","Using anonymous accounts to post harassment while the instigator maintains clean hands","Encouraging pile-ons under the guise of 'community accountability'"], counter:"Document the coordination — screenshots of organizing posts or group chats are powerful evidence. Report the coordinated behavior to platforms as a pattern, not just individual posts. Temporarily restricting your account during active campaigns reduces exposure without permanent withdrawal." }
+    ]
+  },
+  {
+    id:"TA02", name:"Prey Selection", theme:"t-target",
+    ttps:[
+      { id:"T2001", name:"Empathy targeting", actors:["N","P","M"], desc:"Specifically selecting highly empathetic individuals who are less likely to enforce boundaries and more likely to excuse and absorb bad behavior.", examples:["Seeking out caregivers, therapists, or helpers","Choosing partners who 'see the good in everyone'","Selecting people who feel guilt or shame easily"], counter:"Recognize that your empathy is a strength — but it requires discernment. Extending empathy to yourself is equally valid and necessary." },
+      { id:"T2002", name:"Isolation pre-selection", actors:["P","M"], desc:"Preferentially targeting individuals with weak or absent support networks who lack external reality checks to counter the manipulator's framing.", examples:["Targeting new arrivals to a city or organization","Choosing those recently bereaved or divorced","Selecting those already estranged from family"], counter:"Actively maintain diverse social connections. Be wary of anyone who accelerates intimacy while you're in a vulnerable, isolated period." },
+      { id:"T2003", name:"Resource profiling", actors:["M","P"], desc:"Evaluating targets for extractable resources: financial, social, professional, emotional, or sexual value to the manipulator.", examples:["Researching the target's career and income","Assessing access to influential people or platforms","Gauging emotional supply availability and tolerance"], counter:"Notice if someone's interest in you intensifies significantly after learning about your resources or connections." }
+    ]
+  },
+  {
+    id:"TA03", name:"Seduction &amp; Grooming", theme:"t-ingress",
+    ttps:[
+      { id:"T3001", name:"Love bombing", actors:["N","P"], desc:"Overwhelming the target with intense affection, attention, flattery, and apparent devotion to create rapid emotional dependency before real trust is established.", examples:["Declaring love within days or weeks","Constant contact and 'checking in' creating obligation","Grand gestures wildly disproportionate to relationship length","'You're the only person who truly understands me'"], counter:"If intensity feels disproportionate to how long you've known someone, slow down. Healthy connections build gradually. Speed is a manipulation lever." },
+      { id:"T3002", name:"Mirroring", actors:["N","P","M"], desc:"Reflecting the target's values, interests, personality, and worldview back at them to create an irresistible sense of being perfectly understood and matched.", examples:["Claiming identical interests the moment they're disclosed","Adopting the target's opinions in real time","'I feel like I've known you forever' / 'You're so rare'"], counter:"People cannot be a perfect reflection. Healthy relationships include genuine disagreement and comfortable difference." },
+      { id:"T3003", name:"Manufactured serendipity", actors:["M","P"], desc:"Engineering 'chance' encounters and situations that create the appearance of fate or organic connection while following a deliberate, premeditated plan.", examples:["Appearing at locations the target frequents","Arranging to be introduced through mutual contacts","Creating artificial circumstances requiring the target's help or trust"], counter:"Reflect on how you met someone and whether 'coincidences' seem engineered in retrospect. Patterns emerge over time." },
+      { id:"T3004", name:"Pity play", actors:["N","P"], desc:"Presenting oneself as a wounded, misunderstood, or victimized person to elicit the target's protective instincts and lower their defenses.", examples:["'No one has ever truly understood me before you'","Sharing curated trauma narratives very early in a relationship","Positioning all prior partners and relationships as villainous"], counter:"Compassion is appropriate. But caretaking a near-stranger's deep wounds from day one is a relational red flag, not an invitation to rescue." }
+    ]
+  },
+  {
+    id:"TA04", name:"Reality Anchoring", theme:"t-estab",
+    ttps:[
+      { id:"T4001", name:"Idealization phase", actors:["N","P"], desc:"Placing the target on a pedestal — treating them as exceptional and uniquely suited — to create deep investment and identity fusion before devaluation begins.", examples:["'You're not like anyone I've ever met'","Creating an us-versus-the-world narrative early","Making the target feel they unlock something special in the manipulator"], counter:"Watch how someone treats others. If you're 'special' while everyone else is inferior or a villain, you will eventually become everyone else." },
+      { id:"T4002", name:"Manufactured intimacy", actors:["N","P","M"], desc:"Accelerating emotional closeness artificially through premature disclosures, secret-sharing, and conspiracy framing to bypass the target's normal vetting process.", examples:["Sharing 'secrets' very early to create a conspiracy of two","Establishing private jokes and exclusive language rapidly","Pushing for relationship labels before trust is genuinely earned"], counter:"Intimacy that feels 'fast-forwarded' often is. Real emotional depth takes time and cannot be forced without consequence." },
+      { id:"T4003", name:"Boundary testing", actors:["N","P","M"], desc:"Systematically probing and incrementally pushing past the target's limits to map tolerance levels and begin normalizing violations before escalating.", examples:["Small rule-breaking followed by apology, then repetition","Making uncomfortable 'jokes' to gauge reaction and tolerance","Asking for something unreasonable, then scaling back to seem reasonable by comparison"], counter:"Your discomfort is data. When a boundary you clearly set is tested repeatedly, escalate your response — words alone rarely stop this pattern." }
+    ]
+  },
+  {
+    id:"TA05", name:"Active Manipulation", theme:"t-exec",
+    ttps:[
+      { id:"T5001", name:"Gaslighting", actors:["N","P"], desc:"Systematically causing the target to distrust their own perceptions, memory, and judgment by denying documented reality, reframing events, and attacking their credibility.", examples:["'That never happened / you're imagining things'","'Everyone agrees you're overreacting — you're too sensitive'","Hiding or moving objects, then denying all knowledge","Describing the target's accurate memory as 'delusion'"], counter:"Keep records. Journal significant events with dates. Trust written messages over spoken memory. Your perception is valid and worth defending." },
+      { id:"T5002", name:"Intermittent reinforcement", actors:["N","P"], desc:"Alternating unpredictably between reward and punishment to create a trauma-bonding addiction cycle where the target becomes fixated on recovering the 'good' phase.", examples:["Warmth followed by unexplained coldness","Intense praise followed by sudden, devastating criticism","Cycles of idealization, devaluation, and partial repair"], counter:"Relationships should trend toward consistency over time. Chronic unpredictability is not passion or chemistry — it is a control mechanism." },
+      { id:"T5003", name:"Triangulation", actors:["N","M"], desc:"Introducing a third party — real or fabricated — to create jealousy, competition, and insecurity, compelling the target to work harder for the manipulator's attention.", examples:["Mentioning ex-partners approvingly and repeatedly","Fostering rivalry between mutual friends or partners","Withholding approval while noting others who 'appreciate' them more"], counter:"You should not have to compete for basic respect in a relationship. Manufactured jealousy is a control tactic, not evidence of desirability." },
+      { id:"T5004", name:"DARVO", actors:["N","P"], desc:"Deny, Attack, Reverse Victim and Offender — when confronted, the manipulator denies wrongdoing, attacks the person raising concern, then claims to be the real victim of the confrontation.", examples:["'I can't believe you'd accuse me of that after everything I've sacrificed'","Turning every accountability conversation into their emotional crisis","Making the confronter feel guilty and responsible for raising a legitimate issue"], counter:"Notice if confrontations consistently end with you comforting the person you were attempting to hold accountable. That inversion is the tell." },
+      { id:"T5005", name:"Covert put-downs", actors:["N","M","F"], desc:"Disguising criticism, contempt, and dominance assertions as humor, concern, or caring observation to undermine the target while maintaining plausible deniability.", examples:["'I'm just kidding — you're so sensitive about everything'","Backhanded compliments framed carefully as encouragement","'I'm only saying this because I genuinely care about you'"], counter:"Trust your gut reaction to 'jokes.' The emotional impact of a statement is real even if the delivery is dismissive. Impact matters more than intent." },
+      { id:"T5006", name:"Selective empathy display", actors:["M","N"], desc:"Performing empathy strategically — switching it on visibly in public or when advantageous, withdrawing it in private — to maintain a positive reputation while controlling the target.", examples:["Being charming and warm to others while cold or cruel in private","Suddenly showing great concern when the target threatens to leave","Public displays of care that have no match in private behavior"], counter:"Compare how someone treats you in private versus in public, and how they treat people who have nothing to offer them. Both reveal character." },
+      { id:"T5007", name:"Coalition building", actors:["M","N","P","F"], desc:"Organizing a group of colleagues to collectively ostracize, undermine, or isolate a target — often under the guise of legitimate workplace concerns. The instigator recruits allies by selectively sharing damaging or false information to manufacture group consensus.", examples:["Spreading rumors framed as 'concern' to pull colleagues in","Holding meetings about the target without their knowledge","Creating a dynamic where siding with the target becomes socially costly","Framing the target as a 'problem' to leadership before any formal complaint is filed"], counter:"Document who said what and when. HR complaints are significantly stronger when patterns across multiple incidents are logged with specific dates and witnesses." },
+      { id:"T5008", name:"Professional reputation sabotage", actors:["M","N","F"], desc:"Systematically undermining the target's competence and credibility with management, clients, or peers through selective omission, exaggeration of errors, and credit theft — while maintaining plausible deniability.", examples:["Withholding critical information so the target underperforms on visible tasks","Presenting the target's work or ideas as their own in leadership meetings","Reporting minor mistakes prominently while quietly burying successes","Omitting the target from key emails or meetings where their input would have mattered"], counter:"CC yourself on important communications. Follow up verbal agreements with written summaries. Build your paper trail proactively, not reactively." },
+      { id:"T5009", name:"Weaponized HR & policy", actors:["M","P","F"], desc:"Exploiting formal HR and compliance systems as offensive tools — filing bad-faith complaints, misusing disciplinary policies, and manufacturing paper trails to put the target on the defensive and divert institutional scrutiny away from the real perpetrators.", examples:["Filing vague 'hostile workplace' complaints against the target preemptively","Reporting the target for minor policy violations while committing identical ones","Using PIPs as coordinated punishment rather than genuine performance development","Coordinating multiple complainants to simulate independent, corroborating concern"], counter:"If you receive a formal complaint, respond in writing with documented facts only. Consult an employment attorney early — before HR processes conclude, not after." },
+      { id:"T5010", name:"Task & role sabotage", actors:["M","N","P","F"], desc:"Deliberately engineering the target's failure by manipulating their workload, resources, information access, or responsibilities — then using the resulting underperformance as evidence against them in formal or informal settings.", examples:["Overloading the target with impossible deadlines while withholding support or resources","Removing the target from projects without explanation to signal diminished status","Excluding them from training or advancement opportunities given freely to peers","Reassigning their responsibilities piecemeal to gradually hollow out their role"], counter:"When given unreasonable conditions, document them and raise concerns in writing before the deadline — not after the failure. A contemporaneous record changes the power dynamic significantly." },
+      { id:"T5011", name:"Social exclusion & ostracism", actors:["N","M","P","F"], desc:"Systematically excluding the target from the informal social fabric of the workplace — lunches, side conversations, group chats — creating professional isolation that erodes morale and cuts off access to informal information networks where real decisions happen.", examples:["Deliberately omitting the target from team gatherings and after-work events","Going silent or changing subject when the target enters a space","Excluding them from unofficial channels where real workplace information flows","Responding with cold monosyllables in meetings to signal group disapproval"], counter:"Build relationships outside your immediate team. Isolation is most powerful when the target has no other workplace allies. Expand your network proactively before you need it." },
+      { id:"T5012", name:"Manufactured paper trail", actors:["M","P","F"], desc:"Building a false or distorted documented record against the target over time — through biased performance reviews, selectively logged incidents, and bad-faith feedback — to construct grounds for disciplinary action or termination that appears procedurally legitimate.", examples:["Logging one-sided accounts of conflicts in management notes","Setting deliberately vague or impossible performance criteria then marking them 'not met'","Having multiple co-conspirators submit similar complaints to simulate independent concern","Documenting the target's reactions to mistreatment as the primary behavioral problem"], counter:"Request copies of all performance documentation regularly. Respond formally in writing to any review you dispute — your written rebuttal becomes part of the permanent record." },
+      { id:"T5013", name:"Weaponized incompetence", actors:["N","P","M"], desc:"Deliberately performing tasks poorly, forgetfully, or inadequately to avoid responsibility and shift the burden of labor — emotional, domestic, or professional — onto the target. The manipulator feigns inability rather than admitting unwillingness, forcing the target to either do everything themselves or accept substandard results.", examples:["Consistently doing chores or tasks so badly the target gives up asking and does them alone","'Forgetting' important responsibilities repeatedly until the target stops delegating","Performing assigned work incompetently to get removed from duties while avoiding accountability","Claiming inability to manage finances, appointments, or logistics to force the target into the caretaker role","Using confusion or helplessness performatively in professional settings to offload work onto colleagues","Combining with DARVO — reacting with hurt or anger when the target expresses frustration at the pattern"], counter:"Name the pattern explicitly rather than absorbing the extra load. Doing it yourself or lowering your standards to match are both losses — the behavior only stops when the natural consequences land on the person creating them, not on you." },
+      { id:"T5014", name:"Medical gaslighting", actors:["N","P","M"], desc:"Systematically dismissing, minimizing, or ridiculing the target's physical or mental health symptoms to prevent them from seeking care, create self-doubt about their own body, and maintain control over their medical narrative.", examples:["Telling the target their symptoms are 'all in their head' or attention-seeking","Discouraging or sabotaging doctor appointments","Intercepting or dismissing medical diagnoses that contradict the manipulator's narrative","Convincing the target they are mentally ill when they are reacting normally to abuse","Mocking the target for taking medication or seeking therapy"], counter:"See doctors alone when possible — a manipulator in the room changes what you say and what gets documented. Keep your own medical records. A therapist who specializes in abuse can help you distinguish genuine symptoms from induced self-doubt." },
+      { id:"T5015", name:"Psychiatric weaponization", actors:["N","P","M"], desc:"Using mental health systems, diagnoses, and language as weapons — getting the target involuntarily committed, manipulating their psychiatric records, or using therapy against them to discredit, control, or punish.", examples:["Filing false mental health crisis reports to have the target involuntarily hospitalized","Sharing private therapy disclosures with others to humiliate or discredit the target","Using the target's genuine mental health history as 'evidence' of instability in legal proceedings","Convincing the target's therapist of a false narrative to turn treatment against the target","Coaching the target toward psychiatric diagnoses that benefit the manipulator's legal position"], counter:"You have the right to choose your own providers. If you suspect your treatment has been compromised, seek a second opinion from a provider with no connection to the manipulator. Keep therapy records private and in your own possession." },
+      { id:"T5016", name:"Munchausen by proxy / medical child abuse", actors:["N","P"], desc:"Fabricating, inducing, or exaggerating illness in a child or dependent to gain attention, sympathy, and control — while positioning themselves as a devoted caretaker and the target as sick or unstable.", examples:["Repeatedly presenting a child for unnecessary medical treatment","Inducing symptoms through medication tampering or dietary manipulation","Using a child's manufactured illness to justify custody control and limit the other parent's access","Building a medical paper trail portraying the child as severely ill to gain sympathy and legal leverage"], counter:"If you suspect this pattern, document inconsistencies between reported symptoms and observed behavior. Consult a pediatrician independently. This is a form of child abuse — report concerns to child protective services and consult a family law attorney immediately." },
+      { id:"T5017", name:"Therapy sabotage", actors:["N","P","M"], desc:"Actively undermining the target's therapeutic process — either by interfering directly with treatment or by using therapy sessions as intelligence-gathering and narrative-control opportunities.", examples:["Insisting on attending the target's individual therapy sessions","Demanding to know what was discussed in therapy and punishing disclosures","Convincing the target their therapist is 'against them' or incompetent to create distrust","Using couples therapy as a platform to perform victimhood and manipulate the therapist","Pressuring the target to stop therapy when progress threatens the manipulator's control"], counter:"Individual therapy should be individual. A skilled abuse-informed therapist will not require or welcome the partner's presence. If your partner consistently undermines your therapeutic relationship, that pattern itself is diagnostic." }
+    ]
+  },
+  {
+    id:"TA06", name:"Entrapment &amp; Control", theme:"t-persist",
+    ttps:[
+      { id:"T6001", name:"Progressive isolation", actors:["N","P","M","F"], desc:"Gradually severing the target's relationships with support networks — family, friends, colleagues — to eliminate outside reality checks and increase dependency on the manipulator.", examples:["Criticizing the target's close friends persistently until contact fades","Creating manufactured conflicts with the target's family members","Making the target repeatedly choose between the manipulator and their support system"], counter:"Notice if someone's presence in your life correlates strongly with friends and family gradually drifting away. That correlation is a signal." },
+      { id:"T6002", name:"Manufactured dependency", actors:["N","P","M"], desc:"Engineering financial, emotional, social, or logistical dependency to make departure feel practically or psychologically impossible.", examples:["Encouraging the target to quit their job or career","Taking progressive control of finances and decision-making","Making the target reliant on their social introductions and network"], counter:"Independence within a relationship is healthy and should be respected. Someone who systematically erodes your self-sufficiency does not have your interests at heart." },
+      { id:"T6003", name:"Hoovering", actors:["N","P"], desc:"When the target attempts to leave, deploying intense re-attraction — grand gestures, promises of change, appeals to shared history — to pull them back before resuming the manipulation cycle.", examples:["Sudden dramatic transformation the moment departure is threatened","'I've changed, I'm in therapy, I'm getting help now'","Love bombing 2.0 — identical to the original hook","Reaching out through mutual contacts after no-contact is established"], counter:"Behavior change takes months to verify, not hours or days. Promises made specifically during exit attempts follow a predictable, documented pattern." },
+      { id:"T6004", name:"Threat & consequence signaling", actors:["P","M"], desc:"Implicitly or explicitly signaling that departure will result in consequences — reputational damage, legal action, loss of shared resources, or exposure of disclosed confidences.", examples:["'I know things about you that could be very damaging'","Stories about what happened to the 'last person who betrayed' them","Subtle but deliberate references to shared secrets as implicit leverage"], counter:"These threats often have significantly less power than they appear. Consult a trusted advisor or legal professional before reacting. Fear is the goal." },
+      { id:"T6006", name:"Pet & animal targeting", actors:["N","P","M","F"], desc:"Targeting the victim's pets or animals as a means of causing emotional devastation, exerting control, or sending an intimidation message — exploiting the deep bond between the target and their animals as a weapon.", examples:["Harming, poisoning, or injuring a pet to cause emotional devastation and send a clear threat","Stealing or 'rehoming' a pet to deprive the target of emotional support and companionship","Making false reports to animal control or welfare authorities to have pets seized","Using pet custody as a bargaining chip or coercive leverage during separation","Threatening harm to pets to force compliance or silence from the target","Enlisting flying monkeys to carry out animal-related harassment while maintaining deniability"], counter:"Document any suspicious incidents involving your pets immediately and inform your vet so incidents are on medical record. In many jurisdictions harm to animals during domestic abuse is a criminal offense — report to both law enforcement and animal welfare organizations. If threats have been made, consider temporarily rehoming pets with trusted people outside your immediate network." },
+      { id:"T6007", name:"Sleep deprivation", actors:["N","P","M","F"], desc:"Deliberately disrupting the target's sleep patterns to impair cognitive function, emotional regulation, and decision-making — creating a chronically exhausted, destabilized target who is easier to manipulate, gaslight, and control. Carried out directly by intimate partners, or coordinated through neighbors and flying monkeys who create ongoing environmental disruption, often making the pattern difficult to prove or attribute to a single source.", examples:["Starting arguments or emotionally intense conversations deliberately late at night or at bedtime","Waking the target repeatedly through the night with questions, accusations, or demands","Making noise, turning on lights, or otherwise disrupting the sleep environment","Keeping the target up through manufactured crises that 'need to be resolved right now'","Weaponizing a child or pet to interrupt the target's sleep while feigning uninvolvement","Neighbors coordinated by the manipulator making persistent noise — loud music, stomping, slamming — timed to disrupt sleep cycles","Flying monkeys sending late-night texts, calls, or notifications designed to wake or agitate the target","Using sleep deprivation alongside gaslighting — the target's impaired cognition makes them easier to convince their perceptions are wrong"], counter:"Chronic sleep disruption is a recognized form of coercive control in domestic abuse frameworks. Document every incident with timestamps. If neighbors are involved, file noise complaints to create an official record. Impaired sleep significantly worsens your ability to recognize and resist other manipulation tactics — protecting your sleep is a direct protective measure." },
+      { id:"T6008", name:"Noise harassment & vigilance induction", actors:["N","P","M","F"], desc:"Orchestrating a sustained, multi-source noise harassment campaign designed to keep the target in a constant state of hypervigilance, anxiety, and psychological exhaustion. Unlike isolated incidents, this tactic is characterized by its coordination across multiple participants and environments — home, workplace, neighborhood, and public spaces — making it pervasive, difficult to prove, and deeply destabilizing. The goal is not any single incident but the cumulative effect of never allowing the target to feel safe or at rest.", examples:["Neighbors coordinated to produce persistent disruptive noise — banging, stomping, revving engines, slamming doors — timed to coincide with the target's rest, work, or recovery periods","Coworkers participating in desk-banging, loud conversations, or disruptive behavior specifically when the target is present or trying to concentrate","Family members or housemates creating unpredictable noise environments at home to prevent relaxation or sleep","Paid agents or recruited strangers following the target into public spaces and producing disruptive noise — honking, playing loud audio, or running engines outside their location","Coordinated use of construction, machinery, or vehicle noise timed to the target's schedule","Rotating participants so no single person can be identified as the source, making the pattern appear paranoid when reported","Combining with gaslighting — when the target raises the issue, participants deny, minimize, or suggest the target is imagining patterns"], counter:"Document every incident with timestamps, location, and description — video and audio recordings are especially valuable. Patterns over time are what make this provable; a single log entry looks like a complaint, 200 timestamped entries across multiple environments looks like a campaign. Consult a harassment attorney and consider filing a police report framing the overall pattern rather than individual incidents. Sound level meter apps can provide objective, timestamped evidence." },
+      { id:"T6005", name:"Organized harassment / gangstalking", actors:["N","M","P","F"], desc:"A coordinated multi-domain campaign in which the manipulator enlists allies, proxies, and institutions to simultaneously harass, surveil, and discredit the target across personal, professional, and social spheres — making the target's life systematically difficult while the instigator maintains distance and deniability.", examples:["Coordinating multiple people to monitor and report on the target's movements or activities","Orchestrating simultaneous contact with the target's employer, family, and social circle","Using proxies to deliver harassment so the instigator appears uninvolved","Timing incidents across domains to maximize psychological impact and helplessness","Hacking or surveilling the target's devices, accounts, and communications to monitor activity and gather information to use against them","Contacting prospective employers with fabricated or exaggerated allegations to sabotage job opportunities before they materialize","Running neighborhood smear campaigns — contacting neighbors, local groups, or community spaces to poison the target's local reputation and social standing"], counter:"Document every incident with date, time, and witnesses regardless of how minor it seems. A pattern across domains is legally actionable in ways individual incidents are not. Consult a stalking/harassment attorney and contact law enforcement with the full documented pattern." }
+    ]
+  },
+  {
+    id:"TA07", name:"Accountability Evasion", theme:"t-evade",
+    ttps:[
+      { id:"T7001", name:"Reputation management", actors:["N","M","F"], desc:"Proactively managing social perception to make the target's disclosures seem incredible and to preemptively discredit them with shared social networks before conflict arises.", examples:["Positioning themselves visibly as a community pillar and advocate","Seeding narratives about the target's instability before conflict","Ensuring their version of events reaches social networks first"], counter:"Not everyone needs to believe you immediately. Seek support from people who know you directly, not the manipulator's curated community." },
+      { id:"T7002", name:"Word salad / circular arguing", actors:["N","P"], desc:"Responding to accountability with convoluted, tangential, and exhausting conversations that never reach resolution, wearing down the target's will to pursue any legitimate issue.", examples:["Bringing up unrelated historical grievances when confronted","Asking 'what do you want from me?' repeatedly without engaging","Talking for hours while never substantively addressing the core issue"], counter:"You are not obligated to reach resolution in every conversation. It is entirely valid to disengage and revisit the issue when conditions are better." },
+      { id:"T7003", name:"Flying monkey deployment", actors:["N","M","F"], desc:"Enlisting third parties — often mutual friends or family who are unaware they're being used — to pressure, monitor, or deliver messages to the target on the manipulator's behalf.", examples:["Having friends reach out to 'just check on' the target","Using family members to convey the manipulator's framing","Enlisting allies to express concern about what the target 'did'"], counter:"Third-party pressure is still pressure. You can name it directly: 'I think you're being used to deliver a message. I'd rather talk directly if needed.'" },
+      { id:"T7004", name:"Victimhood claiming", actors:["N","P"], desc:"Presenting oneself as the wronged party in any conflict — regardless of the actual facts — to redirect sympathy, neutralize accountability, and reframe the situation entirely.", examples:["'After everything I've sacrificed for you, you do this to me'","Making the confrontation exclusively about their pain, not the issue raised","Catastrophizing their emotional reaction to a normal, reasonable request"], counter:"You can fully acknowledge someone's feelings while still holding them accountable. Both can be true simultaneously — they are not mutually exclusive." }
+    ]
+  },
+  {
+    id:"TA08", name:"Devaluation &amp; Discard", theme:"t-exfil",
+    ttps:[
+      { id:"T8001", name:"Devaluation phase", actors:["N","P"], desc:"After the idealization phase, systematically diminishing the target's perceived worth, contributions, and identity — often as a precursor to discard or replacement with a new target.", examples:["Comparing the target unfavorably and repeatedly to others","Undermining the target's professional or creative confidence","Questioning competence and decisions previously praised with enthusiasm"], counter:"The shift from idealization to devaluation follows a documented pattern. It is not a reflection of your actual worth — it is the next phase of a cycle." },
+      { id:"T8002", name:"Silent treatment & stonewalling", actors:["N","P"], desc:"Withdrawing all communication as punishment and a power assertion, creating anxiety and forcing the target to pursue, apologize, and appease to restore contact.", examples:["Disappearing for days without any explanation after conflict","Responding in monosyllables to express contempt and displeasure","'I'm fine' deployed as a weapon while clearly not fine"], counter:"You are not required to chase someone who deliberately withdraws. Their withdrawal is not proof that you must produce an apology or capitulation." },
+      { id:"T8003", name:"Manufactured discard", actors:["N","P"], desc:"Engineering the target's departure through escalated intolerable behavior so the manipulator appears to be the one abandoned, avoiding accountability and framing the target as the one who gave up.", examples:["Escalating mistreatment until the target can no longer stay","Behaving intolerably while claiming the target 'can never be satisfied'","Setting impossible conditions so the target must make the exit decision"], counter:"Recognize that being systematically pushed out is still a discard. You did not fail by leaving an intolerable situation — that is a healthy response." },
+      { id:"T8004", name:"Post-discard smear campaign", actors:["N","M","P","F"], desc:"Following the end of the relationship, systematically damaging the target's reputation, relationships, and social standing to preempt their narrative and exact reputational punishment.", examples:["Sharing private confidences and information publicly","Fabricating or grossly exaggerating grievances to mutual contacts","Alerting employers, family, or communities to manufactured 'concerns'"], counter:"Document everything with dates. Respond to false claims factually without emotional escalation. Your demonstrated stability over time is the most powerful counter-narrative available." },
+      { id:"T8006", name:"Family narrative poisoning", actors:["N","M","P","F"], desc:"Systematically feeding distorted, fabricated, or selectively true information to the target's family members to erode their trust and support — often before the target is even aware conflict is escalating.", examples:["Calling parents or siblings to share 'concerns' framed as genuine care","Reframing the target's healthy boundary-setting as instability or cruelty","Disclosing private information out of context to manufacture family alarm","Positioning themselves as a worried ally to the family while attacking the target"], counter:"Alert close family early when conflict escalates. A brief, factual heads-up that someone may contact them inoculates against the narrative before it lands." },
+      { id:"T8007", name:"Professional interference", actors:["M","P","F"], desc:"Contacting or attempting to contact the target's employer, clients, colleagues, or prospective employers with damaging information — true, distorted, or fabricated — to threaten or undermine their livelihood.", examples:["Emailing an employer with vague 'concerns about conduct'","Leaving anonymous tips to HR or professional licensing boards","Contacting recruiters or references to poison prospective hires","Weaponizing any professional misconduct discovered during the relationship"], counter:"Document the interference immediately in writing. In many jurisdictions this constitutes tortious interference or defamation. Notify your employer proactively so you control the framing before they do." },
+      { id:"T8008", name:"Social circle scorched earth", actors:["N","M","P","F"], desc:"Conducting a systematic campaign through mutual friends and social networks to ensure the target is isolated and discredited, and loses access to shared community before they can establish their own narrative.", examples:["Hosting gatherings that exclude the target to signal social hierarchy","Privately briefing mutual friends with one-sided accounts","Forcing mutual contacts to choose sides under social pressure","Co-opting shared friend groups entirely over time"], counter:"Identify which friendships are genuinely yours versus shared. Reach those people directly and early with your account. Accept that some shared connections will be lost — protecting core relationships matters more than winning the group." },
+      { id:"T8009", name:"Digital reputation attack", actors:["M","P","N","F"], desc:"Using online platforms, anonymous accounts, or coordinated contacts to damage the target's digital footprint — affecting how they appear to employers, dates, community members, or anyone who searches their name.", examples:["Posting negative reviews on professional profiles (LinkedIn, Glassdoor, Google)","Creating anonymous accounts alleging misconduct","Encouraging others to mass-report the target's social media accounts","Sharing private images, messages, or information without consent"], counter:"Screenshot and preserve all instances immediately — evidence degrades fast online. Report to platforms. For severe cases consult a defamation attorney; many jurisdictions allow unmasking of anonymous posters." },
+      { id:"T8010", name:"Preemptive credibility destruction", actors:["N","M","P","F"], desc:"Before the target can speak publicly about the abuse, proactively seeding the narrative that the target is unstable, a liar, or dangerous — so that any future disclosure is received with preloaded skepticism by anyone who hears it.", examples:["Telling mutual contacts 'I'm worried about them, they've been acting erratically'","Establishing the target as mentally ill or emotionally volatile before conflict surfaces","Framing themselves as a patient, long-suffering victim to anyone who will listen","Contacting the target's therapist, doctor, or support network with false concerns"], counter:"Your calm, consistent, factual behavior over time is the most powerful rebuttal. Document everything. People who know you well will notice the dissonance between the narrative and the reality they observe." }
+    ]
+  }
+];
+
+const actorNames = { N: "Narcissism", P: "Psychopathy", M: "Machiavellianism", F: "Flying Monkeys" };
+let activeFilter = "all";
+
+function buildMatrix() {
+  const container = document.getElementById("matrix");
+  container.innerHTML = "";
+  TACTICS.forEach((tac, ti) => {
+    const col = document.createElement("div");
+    col.className = "col";
+    col.style.setProperty("--col-color", TACTIC_COLORS[ti]);
+
+    const head = document.createElement("div");
+    head.className = "tactic-head";
+    head.innerHTML = `<div class="tactic-num">${tac.id}</div><div class="tactic-name">${tac.name}</div>`;
+    col.appendChild(head);
+
+    tac.ttps.forEach(t => {
+      const card = document.createElement("div");
+      card.className = "ttp";
+      card.dataset.id = t.id;
+      card.dataset.actors = t.actors.join(",");
+      card.dataset.name = t.name.toLowerCase();
+      card.innerHTML = `
+        <div class="ttp-id">${t.id}</div>
+        <div class="ttp-name">${t.name}</div>
+        <div class="actor-tags">${t.actors.map(a => `<span class="tag tag-${a}">${a}</span>`).join("")}</div>
+      `;
+      card.addEventListener("click", () => showModal(t, tac, ti));
+      col.appendChild(card);
+    });
+
+    container.appendChild(col);
+  });
+}
+
+function showModal(t, tac, ti) {
+  const color = TACTIC_COLORS[ti];
+  const modal = document.getElementById("modal");
+  modal.style.setProperty("--modal-color", color);
+  document.getElementById("m-tactic").textContent = `${tac.id} — ${tac.name}`;
+  document.getElementById("m-id").textContent = t.id;
+  document.getElementById("m-title").textContent = t.name;
+  document.getElementById("m-desc").textContent = t.desc;
+  document.getElementById("m-examples").innerHTML = t.examples.map(e => `<li>${e}</li>`).join("");
+  document.getElementById("m-actors").innerHTML = t.actors.map(a =>
+    `<span class="actor-pill pill-${a}">${actorNames[a]}</span>`
+  ).join("");
+  document.getElementById("m-counter").textContent = t.counter;
+  document.getElementById("backdrop").classList.add("open");
+}
+
+function applyFilters() {
+  const q = document.getElementById("search").value.toLowerCase();
+  document.querySelectorAll(".ttp").forEach(card => {
+    const actors = card.dataset.actors.split(",");
+    const matchesFilter = activeFilter === "all" || actors.includes(activeFilter);
+    const matchesSearch = !q || card.dataset.name.includes(q);
+    card.classList.toggle("hidden", !matchesFilter || !matchesSearch);
+  });
+
+  const visible = document.querySelectorAll(".ttp:not(.hidden)").length;
+  document.getElementById("stat-ttps").textContent = visible;
+}
+
+document.getElementById("modal-close").addEventListener("click", () => {
+  document.getElementById("backdrop").classList.remove("open");
+});
+document.getElementById("backdrop").addEventListener("click", e => {
+  if (e.target === e.currentTarget) document.getElementById("backdrop").classList.remove("open");
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") document.getElementById("backdrop").classList.remove("open");
+});
+
+document.getElementById("search").addEventListener("input", applyFilters);
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+buildMatrix();
+</script>
+</body>
+</html>
